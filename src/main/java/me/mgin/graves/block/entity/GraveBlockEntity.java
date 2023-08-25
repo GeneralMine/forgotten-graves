@@ -8,7 +8,7 @@ import com.mojang.authlib.GameProfile;
 import me.mgin.graves.Graves;
 import me.mgin.graves.api.InventoriesApi;
 import me.mgin.graves.block.GraveBlocks;
-import me.mgin.graves.block.utility.NbtHelper;
+import me.mgin.graves.util.NbtHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,8 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -30,6 +28,7 @@ public class GraveBlockEntity extends BlockEntity {
     private int noDecay;
     private String customName;
     private String graveSkull;
+    private long mstime;
     private final Map<String, DefaultedList<ItemStack>> inventories = new HashMap<>() {
     };
 
@@ -40,6 +39,7 @@ public class GraveBlockEntity extends BlockEntity {
         this.graveSkull = "";
         this.xp = 0;
         this.noDecay = 0;
+        this.mstime = 0;
         setState(state);
     }
 
@@ -160,6 +160,24 @@ public class GraveBlockEntity extends BlockEntity {
     }
 
     /**
+     * Set the time the grave was made
+     *
+     * @param timeInMilliseconds long
+     */
+    public void setMstime(long timeInMilliseconds) {
+        this.mstime = timeInMilliseconds;
+        this.markDirty();
+    }
+
+    /**
+     * Get the time the grave was made (in milliseconds)
+     *
+     */
+    public long getMstime() {
+        return mstime;
+    }
+
+    /**
      * Set whether the grave should age or not.
      * <p>
      * <strong>Note:</strong> The grave stops aging if the value is set to 1 (one).
@@ -237,9 +255,10 @@ public class GraveBlockEntity extends BlockEntity {
 
         nbt.putInt("XP", xp);
         nbt.putInt("noDecay", noDecay);
+        nbt.putLong("mstime", mstime);
 
         if (graveOwner != null)
-            nbt.put("GraveOwner", net.minecraft.nbt.NbtHelper.writeGameProfile(new NbtCompound(), graveOwner));
+            nbt.put("GraveOwner", NbtHelper.writeGameProfile(new NbtCompound(), graveOwner));
 
         if (customName != null && this.hasCustomName())
             nbt.putString("CustomName", customName);
@@ -271,9 +290,10 @@ public class GraveBlockEntity extends BlockEntity {
 
         this.xp = nbt.getInt("XP");
         this.noDecay = nbt.getInt("noDecay");
+        this.mstime = nbt.getLong("mstime");
 
         if (nbt.contains("GraveOwner"))
-            this.graveOwner = net.minecraft.nbt.NbtHelper.toGameProfile(nbt.getCompound("GraveOwner"));
+            this.graveOwner = NbtHelper.toGameProfile(nbt.getCompound("GraveOwner"));
 
         if (nbt.contains("CustomName"))
             this.customName = nbt.getString("CustomName");

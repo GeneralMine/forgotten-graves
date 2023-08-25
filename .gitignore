@@ -13,12 +13,12 @@
 **/build
 **/run
 **/run-server
-**/extmods
 **/.settings
 **/.project
 **/.classpath
 **/.fabric
 logs/
+**/external-mods/
 
 # Ginsm ignores
 description.curseforge

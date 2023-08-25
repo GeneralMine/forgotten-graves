@@ -1,9 +1,16 @@
-package me.mgin.graves.block.utility;
+package me.mgin.graves.util;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+
+import java.util.Date;
 
 public class NbtHelper {
     /**
@@ -55,6 +62,61 @@ public class NbtHelper {
     }
 
     /**
+     * Wrapper for <i>NbtHelper.toGameProfile</i>.
+     *
+     * @param nbt NbtCompound
+     * @return GameProfile
+     */
+    public static GameProfile toGameProfile(NbtCompound nbt) {
+        return net.minecraft.nbt.NbtHelper.toGameProfile(nbt);
+    }
+
+    /**
+     * Wrapper for <i>NbtHelper.writeGameProfile</i>.
+     *
+     * @param nbt NbtCompound
+     * @param profile GameProfile
+     * @return NbtCompound
+     */
+    public static NbtCompound writeGameProfile(NbtCompound nbt, GameProfile profile) {
+        return net.minecraft.nbt.NbtHelper.writeGameProfile(nbt, profile);
+    }
+
+    /**
+     * Wrapper for <i>NbtHelper.fromNbtProviderString</i>.
+     *
+     * @param nbtString String
+     * @return NbtCompound
+     */
+    public static NbtCompound fromNbtProviderString(String nbtString) throws CommandSyntaxException {
+        return net.minecraft.nbt.NbtHelper.fromNbtProviderString(nbtString);
+    }
+
+    /**
+     * Wrapper for <i>NbtHelper.toPrettyPrintedText</i>.
+     *
+     * @param nbt NbtElement
+     * @return Text
+     */
+    public static Text toPrettyPrintedText(NbtElement nbt) {
+        return net.minecraft.nbt.NbtHelper.toPrettyPrintedText(nbt);
+    }
+
+    /**
+     * Creates a new BlockPos based on stored coordinates in the given NBT.
+     *
+     * @param nbt NbtCompound
+     * @return BlockPos
+     */
+    public static BlockPos readCoordinates(NbtCompound nbt) {
+        return new BlockPos(
+            nbt.getInt("x"),
+            nbt.getInt("y"),
+            nbt.getInt("z")
+        );
+    }
+
+    /**
      * Upgrades any old graves nbt to newer formats
      *
      * @param nbt NbtCompound
@@ -67,6 +129,21 @@ public class NbtHelper {
         if (nbt.contains("noAge"))
             nbt = upgradeNoAge(nbt);
 
+        if (nbt.getLong("mstime") == 0)
+            nbt = upgradeMsTime(nbt);
+
+        return nbt;
+    }
+
+    /**
+     * Converts old graves from having a mstime of 0 to the time they're
+     * first seen in the world.
+     *
+     * @param nbt NbtCompound
+     * @return NbtCompound
+     */
+    private static NbtCompound upgradeMsTime(NbtCompound nbt) {
+        nbt.putLong("mstime", (new Date()).getTime());
         return nbt;
     }
 
