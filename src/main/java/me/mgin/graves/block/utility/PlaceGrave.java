@@ -6,6 +6,8 @@ import me.mgin.graves.api.InventoriesApi;
 import me.mgin.graves.block.GraveBlocks;
 import me.mgin.graves.block.entity.GraveBlockEntity;
 import me.mgin.graves.config.GravesConfig;
+import me.mgin.graves.state.ServerState;
+import me.mgin.graves.util.Responder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,6 +23,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -95,9 +98,9 @@ public class PlaceGrave {
         Block block = world.getBlockState(pos).getBlock();
 
         return switch (block.getName().getString()) {
-            case "Air" -> !GravesConfig.resolveConfig("floatInAir", profile).floating.floatInAir;
-            case "Water" -> !GravesConfig.resolveConfig("floatInWater", profile).floating.floatInWater;
-            case "Lava" -> !GravesConfig.resolveConfig("floatInLava", profile).floating.floatInLava;
+            case "Air" -> (boolean) GravesConfig.resolve("sinkInAir", profile);
+            case "Water" -> (boolean) GravesConfig.resolve("sinkInWater", profile);
+            case "Lava" -> (boolean) GravesConfig.resolve("sinkInLava", profile);
             default -> false;
         };
     }
@@ -210,25 +213,38 @@ public class PlaceGrave {
         graveEntity.setXp(experience);
         resetPlayerExperience(player);
 
+        // Set grave spawn time
+        graveEntity.setMstime((new Date()).getTime());
+
         // Spawn break particles
         block.onBreak(world, pos, state, player);
 
         // Add the block entity to the world
         world.addBlockEntity(graveEntity);
 
-        // Alert user if graveCoordinates is enabled
-        GravesConfig config = GravesConfig.resolveConfig("graveCoordinates", player.getGameProfile());
+        // Store the grave data in persistent server state (used for restore command)
+        ServerState.storePlayerGrave(player, graveEntity);
 
-        if (config.main.graveCoordinates) {
-            player.sendMessage(
-                Text.translatable("event.death:send-player-coordinates", pos.getX(), pos.getY(), pos.getZ()),
-                false
+        // Alert user if graveCoordinates is enabled
+        boolean graveCoordinates = GravesConfig.resolve("graveCoordinates", player.getGameProfile());
+
+        if (graveCoordinates) {
+            Responder res = new Responder(player, player.getServer());
+            String dimension = String.valueOf(world.getDimensionKey().getValue());
+
+            res.sendInfo(
+                Text.translatable("event.death:send-player-coordinates",
+                    res.dimension(pos.getX(), dimension),
+                    res.dimension(pos.getY(), dimension),
+                    res.dimension(pos.getZ(), dimension)
+                ),
+                null
             );
         }
 
         // For the logs :)
-        System.out.println("[Graves] Grave spawned at: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + " for" +
-            " player " + player.getName().getString() + ".");
+        System.out.printf("[%s] Grave spawned at: %dx %dy %dz for player %s.\n", Graves.MOD_ID, pos.getX(), pos.getY(),
+            pos.getZ(), player.getName().getString());
     }
 
     /**
