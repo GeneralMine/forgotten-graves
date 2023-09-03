@@ -42,8 +42,8 @@ public class CommandContextData {
             .getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
 
         // Determine whether the command is meant to be run on the server or client
-        String[] input = context.getInput().split(" ");
-        this.IS_SERVER = ArrayUtil.indexOf(input, "server") == 1;
+        String[] input = context.getInput().substring(1).split(" ");
+        this.IS_SERVER = input[ArrayUtil.indexOf(input, "graves") + 1].equals("server");
 
         // This is largely used by clientOptions currently.
         if (this.OPTION.contains(":")) {
