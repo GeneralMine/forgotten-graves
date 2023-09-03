@@ -51,7 +51,7 @@ public class PlayersCommand {
             // Check if the profile exists and if it does, add to message
             Optional<GameProfile> potentialProfile = server.getUserCache().getByUuid(id);
             potentialProfile.ifPresent(profile -> {
-                message.set(message.get().copy().append(
+                message.set(message.get().shallowCopy().append(
                     new TranslatableText("command.players.information",
                         res.highlight(profile.getName()),
                         playerState.graves.size()

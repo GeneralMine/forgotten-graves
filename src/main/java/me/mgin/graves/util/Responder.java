@@ -31,12 +31,11 @@ public class Responder {
      * @param target PlayerEntity
      */
     public void send(Text message, PlayerEntity target) {
-
         // Do not send message if command feedback  is disabled
         if (!sendCommandFeedback) return;
 
         // Create prefix (with hover)
-        Text prefix = ResponderTheme.style(new TranslatableText("forgottengraves.small"), "prefix").copy()
+        Text prefix = ResponderTheme.style(new TranslatableText("forgottengraves.small"), "prefix").shallowCopy()
             .styled(style -> style.withHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 new TranslatableText("forgottengraves.normal").formatted(Formatting.YELLOW)
@@ -46,7 +45,7 @@ public class Responder {
         Text response = new LiteralText(""); // This is ghetto but helps prevent transitive styling.
 
         if (message.getString().length() > 0) {
-            response = response.copy()
+            response = response.shallowCopy()
                 .append(prefix)
                 .formatted(Formatting.RESET)
                 .append(message);
@@ -198,13 +197,13 @@ public class Responder {
      * @return Text
      */
     public Text hoverText(Text message, Text content) {
-        return message.copy().styled(style -> style.withHoverEvent(new HoverEvent(
+        return message.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(
             HoverEvent.Action.SHOW_TEXT, content
         )));
     }
 
     public Text runOnClick(Text message, String command) {
-        return message.copy().styled(style -> style.withClickEvent(new ClickEvent(
+        return message.shallowCopy().styled(style -> style.withClickEvent(new ClickEvent(
             ClickEvent.Action.RUN_COMMAND,
             command
         )));

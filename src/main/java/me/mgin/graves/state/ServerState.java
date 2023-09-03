@@ -107,8 +107,6 @@ public class ServerState extends PersistentState {
         // Store the grave nbt in the global state
         playerState.graves.add(graveNbt);
 
-        System.out.println(graveNbt);
-
         // Remove any old graves above the stored graves limit
         cleanupPlayerGraves(playerState);
 

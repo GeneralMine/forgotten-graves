@@ -24,14 +24,14 @@ public class Interact {
         for (int i = 1; i <= amountOfPages; i++) {
             // Handles the currently displayed page
             if (page == i) {
-                pagination = pagination.copy().append(res.hoverText(
+                pagination = pagination.shallowCopy().append(res.hoverText(
                     res.info(String.format("[%d] ", i)),
                     new TranslatableText("utility.pagination.current-page.tooltip")
                 ));
                 continue;
             }
 
-            pagination = pagination.copy().append(generateButton(res,
+            pagination = pagination.shallowCopy().append(generateButton(res,
                 res.highlight(String.format("%d ", i)),
                 new TranslatableText("utility.pagination.page-id.tooltip", i),
                 String.format(command, i)

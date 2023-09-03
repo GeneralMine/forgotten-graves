@@ -181,6 +181,7 @@ public class ListCommand {
     private static Text genListCommandEntry(Responder res, NbtCompound grave, ServerPlayerEntity issuer,
                                             GameProfile recipient,
                                             String target, int i) {
+
         // Get information on the grave
         String created = formatDate(grave.getLong("mstime"));
         String dimension = grave.getString("dimension");
@@ -221,7 +222,7 @@ public class ListCommand {
             // Add a message about clicking to teleport if op
             if (!retrieved) {
                 // Tell player they can teleport to the grave
-                hoverContent = hoverContent.copy().append(
+                hoverContent = hoverContent.shallowCopy().append(
                     res.hint(new TranslatableText("command.list.entry.tooltip.click-to-teleport"))
                 );
 
@@ -235,7 +236,7 @@ public class ListCommand {
             // Attach the op-only command buttons
             String rec = recipient != null ? recipient.getName() : target;
 
-            message = message.copy()
+            message = message.shallowCopy()
                 .append(new LiteralText(" "))
                 .append(Interact.generateButton(res,
                     res.success(new TranslatableText("command.list.entry.restore-button")),
@@ -243,7 +244,7 @@ public class ListCommand {
                     String.format("/graves restore %s %d %s true", target, i + 1, rec)
                 ));
 
-            message = message.copy()
+            message = message.shallowCopy()
                 .append(new LiteralText(" "))
                 .append(Interact.generateButton(res,
                     res.error(new TranslatableText("command.list.entry.delete-button")),

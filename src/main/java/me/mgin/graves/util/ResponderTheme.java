@@ -59,11 +59,11 @@ public class ResponderTheme {
         List<Formatting> style = dimensions.get(dimension);
 
         for (Formatting format : style) {
-            message = message.copy().formatted(format);
+            message = message.shallowCopy().formatted(format);
         }
 
         return message;
-    };
+    }
 
     /**
      * Styles the message based on the given type.
@@ -76,7 +76,7 @@ public class ResponderTheme {
         List<Formatting> style = getStyle(type);
 
         for (Formatting format : style) {
-            message = message.copy().formatted(format);
+            message = message.shallowCopy().formatted(format);
         }
 
         return message;

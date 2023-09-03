@@ -148,7 +148,7 @@ public class ConfigSetter {
         // This runs when modifying the client config
         if (this.client != null && this.client.player != null) {
             // Hardcoding all of this for now; it's being a brat when trying to use Responder as-is.
-            Text prefix = ResponderTheme.style(new TranslatableText("forgottengraves.small"), "prefix").copy()
+            Text prefix = ResponderTheme.style(new TranslatableText("forgottengraves.small"), "prefix").shallowCopy()
                 .styled(style -> style.withHoverEvent(new HoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
                     new TranslatableText("forgottengraves.normal").formatted(Formatting.YELLOW)
