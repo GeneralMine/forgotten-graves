@@ -43,7 +43,7 @@ public class CommandContextData {
 
         // Determine whether the command is meant to be run on the server or client
         String[] input = context.getInput().split(" ");
-        this.IS_SERVER = input[ArrayUtil.indexOf(input, "graves") + 1].equals("server");
+        this.IS_SERVER = ArrayUtil.indexOf(input, "server") == 1;
 
         // This is largely used by clientOptions currently.
         if (this.OPTION.contains(":")) {
